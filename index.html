@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1F3864">
+<title>🍐 마진 마스터</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍐</text></svg>">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --navy: #1F3864;
+  --navy-dark: #142544;
+  --navy-light: #2d4a85;
+  --green: #15803d;
+  --red: #dc2626;
+  --orange: #ea580c;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+  --border: #e2e8f0;
+}
+html, body {
+  font-family: -apple-system, 'Pretendard', BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'tnum';
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── 로그인 화면 ─── */
+.login-screen {
+  position: fixed; inset: 0;
+  background: linear-gradient(135deg, #1F3864 0%, #2d4a85 50%, #3b5998 100%);
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  z-index: 100;
+}
+.login-card {
+  background: rgba(255,255,255,0.98);
+  border-radius: 24px;
+  padding: 40px 32px;
+  width: 100%; max-width: 400px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+}
+.login-logo {
+  width: 80px; height: 80px;
+  background: linear-gradient(135deg, #1F3864, #3b5998);
+  border-radius: 22px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px;
+  box-shadow: 0 12px 32px rgba(31,56,100,0.4);
+  margin: 0 auto 18px;
+}
+.login-title { text-align: center; font-size: 22px; font-weight: 900; color: var(--navy); }
+.login-subtitle { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+.login-input {
+  width: 100%; margin-top: 28px;
+  padding: 18px 20px;
+  font-size: 26px; font-weight: 800;
+  text-align: center; letter-spacing: 10px;
+  border: 3px solid var(--border);
+  border-radius: 14px;
+  background: #f8fafc;
+  color: var(--navy);
+  outline: none; transition: all 0.2s;
+}
+.login-input:focus { border-color: var(--navy); }
+.login-input.error { border-color: var(--red); background: #fef2f2; animation: shake 0.5s; }
+.login-error { color: var(--red); font-size: 13px; font-weight: 700; text-align: center; margin-top: 10px; }
+.login-btn {
+  width: 100%; margin-top: 18px;
+  padding: 18px;
+  font-size: 16px; font-weight: 800;
+  background: linear-gradient(135deg, #1F3864, #2d4a85);
+  color: white; border: none; border-radius: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(31,56,100,0.3);
+  letter-spacing: 0.5px;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+
+/* ─── 헤더 ─── */
+.header {
+  background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
+  color: white;
+  padding: 16px 20px;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  position: sticky; top: 0; z-index: 10;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.15);
+}
+.header-row { display: flex; align-items: center; gap: 10px; }
+.header h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+.header-status { margin-left: auto; font-size: 11px; opacity: 0.85; font-weight: 600; }
+.refresh-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+}
+
+/* ─── 시즌 탭 ─── */
+.season-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 14px 20px;
+  background: white;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+.season-tabs::-webkit-scrollbar { display: none; }
+.season-tab {
+  padding: 10px 18px;
+  background: #f1f5f9;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font-size: 13px; font-weight: 800;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.season-tab.active {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+  box-shadow: 0 4px 12px rgba(31,56,100,0.25);
+}
+
+/* ─── 메인 ─── */
+.main { padding: 16px; }
+.section { margin-bottom: 20px; }
+.section-title {
+  font-size: 13px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+/* KPI 카드 */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.kpi {
+  background: var(--card);
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+.kpi.full { grid-column: 1 / -1; }
+.kpi-label {
+  font-size: 11px; font-weight: 800; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.kpi-value {
+  font-size: 22px; font-weight: 900; color: var(--navy);
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.5px;
+}
+.kpi-value.green { color: var(--green); }
+.kpi-value.red { color: var(--red); }
+.kpi-value.huge { font-size: 32px; }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; }
+
+/* 회사 순이익 카드 */
+.profit-card {
+  background: linear-gradient(135deg, #15803d, #16a34a);
+  color: white;
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 20px rgba(21,128,61,0.25);
+}
+.profit-card.cyan { background: linear-gradient(135deg, #0891b2, #06b6d4); box-shadow: 0 8px 20px rgba(8,145,178,0.25); }
+.profit-card.red { background: linear-gradient(135deg, #dc2626, #b91c1c); box-shadow: 0 8px 20px rgba(220,38,38,0.25); }
+.profit-label { font-size: 11px; opacity: 0.9; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.profit-formula { font-size: 11px; opacity: 0.8; margin-top: 4px; }
+.profit-value { font-size: 32px; font-weight: 900; margin-top: 12px; font-variant-numeric: tabular-nums; }
+.profit-rate { font-size: 13px; opacity: 0.95; margin-top: 4px; font-weight: 700; }
+
+/* 리스트 (TOP 바이어/품목) */
+.list-card {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.list-row {
+  display: flex; align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.list-row:last-child { border-bottom: none; }
+.list-rank {
+  width: 28px; height: 28px;
+  background: #f1f5f9;
+  color: var(--navy);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900;
+  margin-right: 12px;
+}
+.list-rank.gold { background: #fef3c7; color: #b45309; }
+.list-rank.silver { background: #f1f5f9; color: #475569; }
+.list-rank.bronze { background: #ffedd5; color: #c2410c; }
+.list-name {
+  flex: 1;
+  font-size: 14px; font-weight: 700; color: var(--text);
+}
+.list-amount {
+  font-size: 14px; font-weight: 800; color: var(--navy);
+  font-variant-numeric: tabular-nums;
+}
+.list-margin {
+  font-size: 11px; color: var(--muted); margin-top: 2px;
+  font-weight: 600;
+}
+
+/* 로딩/에러 */
+.loading, .error-msg {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.loading-spinner {
+  width: 40px; height: 40px;
+  border: 4px solid var(--border);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-msg { color: var(--red); }
+
+/* 푸터 */
+.footer {
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 11px; color: var(--muted);
+  font-weight: 600;
+}
+.lock-btn {
+  margin-top: 14px;
+  padding: 8px 20px;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--navy);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer;
+}
+
+/* 반응형 — 큰 화면 */
+@media (min-width: 600px) {
+  .main { max-width: 600px; margin: 0 auto; padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 화면 -->
+<div id="login" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">🍐</div>
+    <div class="login-title">마진 계산 마스터</div>
+    <div class="login-subtitle">현농프레쉬 모바일 대시보드</div>
+    <input id="pwd" type="password" class="login-input" placeholder="••••" inputmode="numeric" maxlength="20" autofocus>
+    <div id="login-error" class="login-error" style="display:none;">❌ 비밀번호가 틀렸어요</div>
+    <button id="login-btn" class="login-btn">로그인 →</button>
+  </div>
+</div>
+
+<!-- 메인 앱 -->
+<div id="app" style="display:none;">
+  <header class="header">
+    <div class="header-row">
+      <span style="font-size:22px;">🍐</span>
+      <h1>마진 마스터</h1>
+      <button id="refresh" class="refresh-btn">🔄</button>
+    </div>
+    <div class="header-status" id="header-status">─</div>
+  </header>
+
+  <div class="season-tabs" id="season-tabs"></div>
+
+  <div class="main" id="content">
+    <div class="loading">
+      <div class="loading-spinner"></div>
+      <div>데이터 불러오는 중...</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    © 2026 현농프레쉬 · v1.0
+    <br>
+    <button class="lock-btn" id="lock-btn">🔒 잠그기</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+// 설정 — Apps Script URL을 여기에!
+// ════════════════════════════════════════════════════
+const APPS_SCRIPT_URL = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const PASSWORD = '1004';
+let txs = [];
+let currentSeason = null;
+
+// ─── 로그인 처리 ───
+const pwdInput = document.getElementById('pwd');
+const loginBtn = document.getElementById('login-btn');
+const loginError = document.getElementById('login-error');
+
+function tryLogin() {
+  const v = pwdInput.value.trim();
+  if (v === PASSWORD) {
+    sessionStorage.setItem('mobAuthed', 'true');
+    showApp();
+  } else {
+    loginError.style.display = 'block';
+    pwdInput.classList.add('error');
+    pwdInput.value = '';
+    setTimeout(() => pwdInput.classList.remove('error'), 500);
+    pwdInput.focus();
+  }
+}
+
+loginBtn.addEventListener('click', tryLogin);
+pwdInput.addEventListener('keypress', e => { if (e.key === 'Enter') tryLogin(); });
+
+document.getElementById('lock-btn').addEventListener('click', () => {
+  sessionStorage.removeItem('mobAuthed');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  pwdInput.value = '';
+  pwdInput.focus();
+});
+
+document.getElementById('refresh').addEventListener('click', loadData);
+
+if (sessionStorage.getItem('mobAuthed') === 'true') {
+  showApp();
+}
+
+function showApp() {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadData();
+}
+
+// ─── 데이터 로드 ───
+async function loadData() {
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>데이터 불러오는 중...</div></div>';
+
+  if (APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
+    content.innerHTML = '<div class="error-msg">⚠ Apps Script URL이 설정되지 않았어요.<br>HTML 파일의 APPS_SCRIPT_URL을 수정해주세요.</div>';
+    return;
+  }
+
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?pwd=' + PASSWORD);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    txs = data.txs || [];
+    document.getElementById('header-status').textContent =
+      `${txs.length}건 · ${new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})}`;
+
+    renderSeasonTabs();
+    renderDashboard();
+  } catch (e) {
+    content.innerHTML = `<div class="error-msg">❌ ${e.message}<br><br>인터넷 확인 후 🔄 다시 시도</div>`;
+  }
+}
+
+// ─── 시즌 탭 렌더 ───
+function getSeasonYear(t) {
+  const d = new Date(t.shippingDate);
+  if (isNaN(d)) return null;
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  return m >= 7 ? y : y - 1;
+}
+
+function renderSeasonTabs() {
+  const seasonsSet = new Set();
+  txs.forEach(t => { const y = getSeasonYear(t); if (y) seasonsSet.add(y); });
+  const seasons = [...seasonsSet].sort((a,b) => b - a);
+  if (currentSeason === null) currentSeason = seasons[0];
+
+  const tabs = document.getElementById('season-tabs');
+  tabs.innerHTML = seasons.map(y => `
+    <div class="season-tab ${y === currentSeason ? 'active' : ''}" data-y="${y}">
+      📅 ${y}년 시즌
+    </div>
+  `).join('');
+
+  tabs.querySelectorAll('.season-tab').forEach(el => {
+    el.addEventListener('click', () => {
+      currentSeason = parseInt(el.dataset.y);
+      renderSeasonTabs();
+      renderDashboard();
+    });
+  });
+}
+
+// ─── 대시보드 렌더 ───
+function isIncomplete(t) {
+  const realCosts = (t.costMaterial||0) + (t.costInland||0) + (t.costFreight||0) + (t.costOther||0);
+  if (realCosts === 0) return true;
+  if (t.actualReceivedKrw > 0 && t.supplyAmount > 0 && t.supplyAmount / t.actualReceivedKrw < 0.1) return true;
+  return false;
+}
+
+function extractBuyerCode(invoiceNo) {
+  if (!invoiceNo) return '';
+  const m = String(invoiceNo).match(/^([A-Z&]+)/i);
+  return m ? m[1].toUpperCase() : '';
+}
+
+function fmt(n) {
+  if (!n || n === 0) return '0';
+  if (Math.abs(n) >= 100000000) return (n / 100000000).toFixed(1) + '억';
+  if (Math.abs(n) >= 10000) return (n / 10000).toFixed(0) + '만';
+  return Math.round(n).toLocaleString();
+}
+function fmtFull(n) {
+  if (!n || n === 0) return '0원';
+  return n.toLocaleString() + '원';
+}
+
+function loadFixedCosts(year) {
+  try {
+    const raw = localStorage.getItem('fixedCosts_' + year);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return {};
+}
+function loadIncomeSupport(year) {
+  try {
+    const raw = localStorage.getItem('incomeSupport_' + year);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return {};
+}
+
+function renderDashboard() {
+  const seasonTxs = txs.filter(t => getSeasonYear(t) === currentSeason && !isIncomplete(t));
+  if (seasonTxs.length === 0) {
+    document.getElementById('content').innerHTML = '<div class="loading">선택한 시즌 데이터 없음</div>';
+    return;
+  }
+
+  // KPI
+  const sales = seasonTxs.reduce((s, t) => s + t.actualReceivedKrw, 0);
+  const cost = seasonTxs.reduce((s, t) => s + t.supplyAmount, 0);
+  const margin = seasonTxs.reduce((s, t) => s + t.trueMargin, 0);
+  const rate = sales > 0 ? margin / sales : 0;
+
+  // 회사 순이익
+  const fixed = loadFixedCosts(currentSeason);
+  const income = loadIncomeSupport(currentSeason);
+  const totalFixed = Object.values(fixed).reduce((s, v) => s + (Number(v) || 0), 0);
+  const totalIncome = Object.values(income).reduce((s, v) => s + (Number(v) || 0), 0);
+  const companyProfit = margin - totalFixed;
+  const realProfit = companyProfit + totalIncome;
+
+  // 바이어 TOP
+  const buyerMap = {};
+  seasonTxs.forEach(t => {
+    const code = extractBuyerCode(t.invoiceNo) || t.buyer;
+    if (!code) return;
+    if (!buyerMap[code]) buyerMap[code] = { name: code, sales: 0, margin: 0, count: 0 };
+    buyerMap[code].sales += t.actualReceivedKrw;
+    buyerMap[code].margin += t.trueMargin;
+    buyerMap[code].count += 1;
+  });
+  const topBuyers = Object.values(buyerMap).sort((a,b) => b.sales - a.sales).slice(0, 8);
+
+  // 품목 TOP
+  const productMap = {};
+  seasonTxs.forEach(t => {
+    const p = t.product || '기타';
+    if (!productMap[p]) productMap[p] = { name: p, sales: 0, margin: 0 };
+    productMap[p].sales += t.actualReceivedKrw;
+    productMap[p].margin += t.trueMargin;
+  });
+  const topProducts = Object.values(productMap).sort((a,b) => b.sales - a.sales);
+
+  // 국가 TOP
+  const countryMap = {};
+  seasonTxs.forEach(t => {
+    const c = String(t.country || '').split('(')[0].trim() || '기타';
+    if (!countryMap[c]) countryMap[c] = { name: c, sales: 0 };
+    countryMap[c].sales += t.actualReceivedKrw;
+  });
+  const topCountries = Object.values(countryMap).sort((a,b) => b.sales - a.sales).slice(0, 6);
+
+  document.getElementById('content').innerHTML = `
+    <div class="section">
+      <div class="section-title">📊 ${currentSeason}년 시즌 실적</div>
+      <div class="kpi-grid">
+        <div class="kpi full">
+          <div class="kpi-label">총 매출</div>
+          <div class="kpi-value huge">${fmt(sales)}</div>
+          <div class="kpi-sub">${fmtFull(sales)}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">공급가액</div>
+          <div class="kpi-value">${fmt(cost)}</div>
+          <div class="kpi-sub">${fmtFull(cost)}</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">거래 건수</div>
+          <div class="kpi-value">${seasonTxs.length}건</div>
+        </div>
+        <div class="kpi full">
+          <div class="kpi-label">찐마진 (판매 이익)</div>
+          <div class="kpi-value huge ${margin >= 0 ? 'green' : 'red'}">${fmt(margin)}</div>
+          <div class="kpi-sub">${fmtFull(margin)} · 마진율 ${(rate*100).toFixed(2)}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏢 회사 순이익</div>
+      <div class="profit-card ${companyProfit >= 0 ? '' : 'red'}">
+        <div class="profit-label">회사 순이익</div>
+        <div class="profit-formula">매출 − 매입 − 고정비</div>
+        <div class="profit-value">${fmt(companyProfit)}</div>
+        <div class="profit-rate">${fmtFull(companyProfit)}</div>
+      </div>
+      <div class="profit-card cyan">
+        <div class="profit-label">🎯 현실 회사 이익</div>
+        <div class="profit-formula">매출 + 정부지원금 − 매입 − 고정비</div>
+        <div class="profit-value">${fmt(realProfit)}</div>
+        <div class="profit-rate">${fmtFull(realProfit)}${totalIncome > 0 ? ' · 지원금 +' + fmt(totalIncome) : ''}</div>
+      </div>
+      ${totalFixed === 0 ? '<div style="font-size:12px; color:var(--muted); margin-top:8px; padding:10px; background:#fffbeb; border-radius:8px;">💡 PC 앱에서 고정비/지원금을 입력하면 정확한 순이익이 보여요</div>' : ''}
+    </div>
+
+    <div class="section">
+      <div class="section-title">🛒 TOP 바이어 (매출 순)</div>
+      <div class="list-card">
+        ${topBuyers.map((b, i) => {
+          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+          const marginColor = b.margin >= 0 ? 'var(--green)' : 'var(--red)';
+          return `
+            <div class="list-row">
+              <div class="list-rank ${rankClass}">${i + 1}</div>
+              <div style="flex:1;">
+                <div class="list-name">${b.name}</div>
+                <div class="list-margin">${b.count}건 · 마진 <span style="color:${marginColor}; font-weight:800;">${fmt(b.margin)}</span></div>
+              </div>
+              <div class="list-amount">${fmt(b.sales)}</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🍐 품목별 매출</div>
+      <div class="list-card">
+        ${topProducts.map(p => `
+          <div class="list-row">
+            <div style="flex:1;" class="list-name">${productEmoji(p.name)} ${p.name}</div>
+            <div style="text-align:right;">
+              <div class="list-amount">${fmt(p.sales)}</div>
+              <div class="list-margin" style="color:${p.margin>=0?'var(--green)':'var(--red)'};">마진 ${fmt(p.margin)}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🌏 국가별 매출</div>
+      <div class="list-card">
+        ${topCountries.map(c => `
+          <div class="list-row">
+            <div style="flex:1;" class="list-name">🌏 ${c.name}</div>
+            <div class="list-amount">${fmt(c.sales)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function productEmoji(name) {
+  const n = String(name || '').toLowerCase();
+  if (/딸기|strawberry/.test(n)) return '🍓';
+  if (/샤인|포도|grape|muscat/.test(n)) return '🍇';
+  if (/배|pear/.test(n)) return '🍐';
+  if (/사과|apple/.test(n)) return '🍎';
+  if (/감|persimmon/.test(n)) return '🟠';
+  if (/복숭아|peach/.test(n)) return '🍑';
+  if (/귤|오렌지|mandarin/.test(n)) return '🍊';
+  if (/키위|kiwi/.test(n)) return '🥝';
+  if (/멜론|melon/.test(n)) return '🍈';
+  if (/수박|watermelon/.test(n)) return '🍉';
+  return '📦';
+}
+</script>
+</body>
+</html>
