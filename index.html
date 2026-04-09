@@ -504,14 +504,26 @@ function renderDashboard() {
   });
   const topProducts = Object.values(productMap).sort((a,b) => b.sales - a.sales);
 
+  // 산지 TOP
+  const originMap = {};
+  seasonTxs.forEach(t => {
+    const o = String(t.origin || '').trim() || '기타';
+    if (!originMap[o]) originMap[o] = { name: o, sales: 0, margin: 0, count: 0 };
+    originMap[o].sales += t.actualReceivedKrw;
+    originMap[o].margin += t.trueMargin;
+    originMap[o].count += 1;
+  });
+  const topOrigins = Object.values(originMap).sort((a,b) => b.sales - a.sales).slice(0, 10);
+
   // 국가 TOP
   const countryMap = {};
   seasonTxs.forEach(t => {
     const c = String(t.country || '').split('(')[0].trim() || '기타';
-    if (!countryMap[c]) countryMap[c] = { name: c, sales: 0 };
+    if (!countryMap[c]) countryMap[c] = { name: c, sales: 0, count: 0 };
     countryMap[c].sales += t.actualReceivedKrw;
+    countryMap[c].count += 1;
   });
-  const topCountries = Object.values(countryMap).sort((a,b) => b.sales - a.sales).slice(0, 6);
+  const topCountries = Object.values(countryMap).sort((a,b) => b.sales - a.sales).slice(0, 10);
 
   document.getElementById('content').innerHTML = `
     <div class="section">
@@ -540,20 +552,18 @@ function renderDashboard() {
     </div>
 
     <div class="section">
-      <div class="section-title">🏢 회사 순이익</div>
-      <div class="profit-card ${companyProfit >= 0 ? '' : 'red'}">
-        <div class="profit-label">회사 순이익</div>
-        <div class="profit-formula">매출 − 매입 − 고정비</div>
-        <div class="profit-value">${fmt(companyProfit)}</div>
-        <div class="profit-rate">${fmtFull(companyProfit)}</div>
+      <div class="section-title">🍐 품목별 매출</div>
+      <div class="list-card">
+        ${topProducts.map(p => `
+          <div class="list-row">
+            <div style="flex:1;" class="list-name">${productEmoji(p.name)} ${p.name}</div>
+            <div style="text-align:right;">
+              <div class="list-amount">${fmt(p.sales)}</div>
+              <div class="list-margin" style="color:${p.margin>=0?'var(--green)':'var(--red)'};">마진 ${fmt(p.margin)}</div>
+            </div>
+          </div>
+        `).join('')}
       </div>
-      <div class="profit-card cyan">
-        <div class="profit-label">🎯 현실 회사 이익</div>
-        <div class="profit-formula">매출 + 정부지원금 − 매입 − 고정비</div>
-        <div class="profit-value">${fmt(realProfit)}</div>
-        <div class="profit-rate">${fmtFull(realProfit)}${totalIncome > 0 ? ' · 지원금 +' + fmt(totalIncome) : ''}</div>
-      </div>
-      ${totalFixed === 0 ? '<div style="font-size:12px; color:var(--muted); margin-top:8px; padding:10px; background:#fffbeb; border-radius:8px;">💡 PC 앱에서 고정비/지원금을 입력하면 정확한 순이익이 보여요</div>' : ''}
     </div>
 
     <div class="section">
@@ -577,30 +587,59 @@ function renderDashboard() {
     </div>
 
     <div class="section">
-      <div class="section-title">🍐 품목별 매출</div>
+      <div class="section-title">🌾 산지 매출 순</div>
       <div class="list-card">
-        ${topProducts.map(p => `
-          <div class="list-row">
-            <div style="flex:1;" class="list-name">${productEmoji(p.name)} ${p.name}</div>
-            <div style="text-align:right;">
-              <div class="list-amount">${fmt(p.sales)}</div>
-              <div class="list-margin" style="color:${p.margin>=0?'var(--green)':'var(--red)'};">마진 ${fmt(p.margin)}</div>
+        ${topOrigins.map((o, i) => {
+          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+          const marginColor = o.margin >= 0 ? 'var(--green)' : 'var(--red)';
+          return `
+            <div class="list-row">
+              <div class="list-rank ${rankClass}">${i + 1}</div>
+              <div style="flex:1;">
+                <div class="list-name">🌾 ${o.name}</div>
+                <div class="list-margin">${o.count}건 · 마진 <span style="color:${marginColor}; font-weight:800;">${fmt(o.margin)}</span></div>
+              </div>
+              <div class="list-amount">${fmt(o.sales)}</div>
             </div>
-          </div>
-        `).join('')}
+          `;
+        }).join('')}
       </div>
     </div>
 
     <div class="section">
       <div class="section-title">🌏 국가별 매출</div>
       <div class="list-card">
-        ${topCountries.map(c => `
-          <div class="list-row">
-            <div style="flex:1;" class="list-name">🌏 ${c.name}</div>
-            <div class="list-amount">${fmt(c.sales)}</div>
-          </div>
-        `).join('')}
+        ${topCountries.map((c, i) => {
+          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+          return `
+            <div class="list-row">
+              <div class="list-rank ${rankClass}">${i + 1}</div>
+              <div style="flex:1;">
+                <div class="list-name">🌏 ${c.name}</div>
+                <div class="list-margin">${c.count}건</div>
+              </div>
+              <div class="list-amount">${fmt(c.sales)}</div>
+            </div>
+          `;
+        }).join('')}
       </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">🏢 회사 순이익</div>
+      <div class="profit-card ${companyProfit >= 0 ? '' : 'red'}">
+        <div class="profit-label">회사 순이익</div>
+        <div class="profit-formula">매출 − 매입 − 고정비</div>
+        <div class="profit-value">${fmt(companyProfit)}</div>
+        <div class="profit-rate">${fmtFull(companyProfit)}</div>
+      </div>
+      <div class="profit-card cyan">
+        <div class="profit-label">🎯 현실 회사 이익</div>
+        <div class="profit-formula">매출 + 정부지원금 − 매입 − 고정비</div>
+        <div class="profit-value">${fmt(realProfit)}</div>
+        <div class="profit-rate">${fmtFull(realProfit)}${totalIncome > 0 ? ' · 지원금 +' + fmt(totalIncome) : ''}</div>
+      </div>
+      ${totalFixed === 0 ? '<div style="font-size:12px; color:var(--muted); margin-top:8px; padding:10px; background:#fffbeb; border-radius:8px;">💡 PC 앱에서 고정비/지원금을 입력하면 정확한 순이익이 보여요</div>' : ''}
     </div>
   `;
 }
