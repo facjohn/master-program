@@ -625,22 +625,6 @@ function renderDashboard() {
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-title">🏢 회사 순이익</div>
-      <div class="profit-card ${companyProfit >= 0 ? '' : 'red'}">
-        <div class="profit-label">회사 순이익</div>
-        <div class="profit-formula">매출 − 매입 − 고정비</div>
-        <div class="profit-value">${fmt(companyProfit)}</div>
-        <div class="profit-rate">${fmtFull(companyProfit)}</div>
-      </div>
-      <div class="profit-card cyan">
-        <div class="profit-label">🎯 현실 회사 이익</div>
-        <div class="profit-formula">매출 + 정부지원금 − 매입 − 고정비</div>
-        <div class="profit-value">${fmt(realProfit)}</div>
-        <div class="profit-rate">${fmtFull(realProfit)}${totalIncome > 0 ? ' · 지원금 +' + fmt(totalIncome) : ''}</div>
-      </div>
-      ${totalFixed === 0 ? '<div style="font-size:12px; color:var(--muted); margin-top:8px; padding:10px; background:#fffbeb; border-radius:8px;">💡 PC 앱에서 고정비/지원금을 입력하면 정확한 순이익이 보여요</div>' : ''}
-    </div>
   `;
 }
 
