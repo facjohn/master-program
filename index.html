@@ -5,83 +5,81 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1F3864">
+<meta name="theme-color" content="#111111">
 <title>🍐 마진 마스터</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍐</text></svg>">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 :root {
-  --navy: #1F3864;
-  --navy-dark: #142544;
-  --navy-light: #2d4a85;
-  --green: #15803d;
-  --red: #dc2626;
-  --orange: #ea580c;
-  --bg: #f1f5f9;
+  --bg: #FAFAFA;
   --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
+  --ink: #111111;
+  --muted: #71717A;
+  --border: #E4E4E7;
+  --hair: #F4F4F5;
+  --blue: #2a78d6;    /* 매출 */
+  --teal: #1baf7a;    /* 찐마진 */
+  --red: #DC2626;     /* 적자 텍스트 */
+  --red-bar: #e34948; /* 적자 막대 */
+  --purple: #4a3aa7;  /* 건수 */
 }
 html, body {
   font-family: -apple-system, 'Pretendard', BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
   background: var(--bg);
-  color: var(--text);
+  color: var(--ink);
   -webkit-font-smoothing: antialiased;
   font-feature-settings: 'tnum';
   min-height: 100vh;
-  padding-bottom: env(safe-area-inset-bottom);
 }
+body { padding-bottom: env(safe-area-inset-bottom); font-size: 15px; line-height: 1.45; }
+button { font-family: inherit; }
 
 /* ─── 로그인 화면 ─── */
 .login-screen {
   position: fixed; inset: 0;
-  background: linear-gradient(135deg, #1F3864 0%, #2d4a85 50%, #3b5998 100%);
+  background: #111111;
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
   z-index: 100;
 }
 .login-card {
-  background: rgba(255,255,255,0.98);
+  background: #fff;
   border-radius: 24px;
   padding: 40px 32px;
   width: 100%; max-width: 400px;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5);
 }
 .login-logo {
-  width: 80px; height: 80px;
-  background: linear-gradient(135deg, #1F3864, #3b5998);
-  border-radius: 22px;
+  width: 76px; height: 76px;
+  background: #111;
+  border-radius: 20px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
-  box-shadow: 0 12px 32px rgba(31,56,100,0.4);
+  font-size: 44px;
   margin: 0 auto 18px;
 }
-.login-title { text-align: center; font-size: 22px; font-weight: 900; color: var(--navy); }
-.login-subtitle { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 500; }
+.login-title { text-align: center; font-size: 22px; font-weight: 900; color: var(--ink); }
+.login-subtitle { text-align: center; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 600; }
 .login-input {
-  width: 100%; margin-top: 28px;
-  padding: 18px 20px;
+  width: 100%; margin-top: 26px;
+  padding: 16px 20px;
   font-size: 26px; font-weight: 800;
   text-align: center; letter-spacing: 10px;
-  border: 3px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: 14px;
-  background: #f8fafc;
-  color: var(--navy);
-  outline: none; transition: all 0.2s;
+  background: #FAFAFA;
+  color: var(--ink);
+  outline: none; transition: border-color 0.2s;
 }
-.login-input:focus { border-color: var(--navy); }
-.login-input.error { border-color: var(--red); background: #fef2f2; animation: shake 0.5s; }
-.login-error { color: var(--red); font-size: 13px; font-weight: 700; text-align: center; margin-top: 10px; }
+.login-input:focus { border-color: var(--ink); }
+.login-input.error { border-color: var(--red); background: #FEF2F2; animation: shake 0.5s; }
+.login-error { color: var(--red); font-size: 14px; font-weight: 700; text-align: center; margin-top: 10px; }
 .login-btn {
   width: 100%; margin-top: 18px;
-  padding: 18px;
+  padding: 17px;
   font-size: 16px; font-weight: 800;
-  background: linear-gradient(135deg, #1F3864, #2d4a85);
-  color: white; border: none; border-radius: 14px;
+  background: #111; color: #fff;
+  border: none; border-radius: 14px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(31,56,100,0.3);
-  letter-spacing: 0.5px;
 }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -91,23 +89,23 @@ html, body {
 
 /* ─── 헤더 ─── */
 .header {
-  background: linear-gradient(135deg, var(--navy-dark), var(--navy), var(--navy-light));
-  color: white;
-  padding: 16px 20px;
-  padding-top: calc(16px + env(safe-area-inset-top));
+  background: #111;
+  color: #fff;
+  padding: 14px 18px;
+  padding-top: calc(14px + env(safe-area-inset-top));
   position: sticky; top: 0; z-index: 10;
-  box-shadow: 0 4px 12px rgba(15,23,42,0.15);
 }
 .header-row { display: flex; align-items: center; gap: 10px; }
-.header h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
-.header-status { margin-left: auto; font-size: 11px; opacity: 0.85; font-weight: 600; }
+.header-logo { font-size: 21px; }
+.header h1 { font-size: 17px; font-weight: 900; letter-spacing: -0.3px; }
+.header-status { margin-left: auto; font-size: 12px; opacity: 0.8; font-weight: 600; font-variant-numeric: tabular-nums; }
 .refresh-btn {
-  background: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
   border: 1px solid rgba(255,255,255,0.25);
-  color: white;
+  color: #fff;
   padding: 6px 12px;
   border-radius: 8px;
-  font-size: 12px; font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -115,162 +113,148 @@ html, body {
 .season-tabs {
   display: flex;
   gap: 8px;
-  padding: 14px 20px;
-  background: white;
+  padding: 12px 16px;
+  background: #fff;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .season-tabs::-webkit-scrollbar { display: none; }
+.season-tabs:empty { display: none; }
 .season-tab {
-  padding: 10px 18px;
-  background: #f1f5f9;
-  border: 2px solid transparent;
-  border-radius: 10px;
-  font-size: 13px; font-weight: 800;
+  padding: 9px 18px;
+  background: var(--hair);
+  border: 1.5px solid transparent;
+  border-radius: 999px;
+  font-size: 14px; font-weight: 800;
   color: var(--muted);
   cursor: pointer;
   white-space: nowrap;
-  transition: all 0.15s;
+  flex: none;
 }
-.season-tab.active {
-  background: var(--navy);
-  color: white;
-  border-color: var(--navy);
-  box-shadow: 0 4px 12px rgba(31,56,100,0.25);
-}
+.season-tab.active { background: #111; color: #fff; }
 
 /* ─── 메인 ─── */
-.main { padding: 16px; }
-.section { margin-bottom: 20px; }
-.section-title {
-  font-size: 13px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-/* KPI 카드 */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.kpi {
+.main { padding: 14px 14px 4px; max-width: 640px; margin: 0 auto; width: 100%; }
+.card {
   background: var(--card);
-  padding: 16px;
-  border-radius: 14px;
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-.kpi.full { grid-column: 1 / -1; }
-.kpi-label {
-  font-size: 11px; font-weight: 800; color: var(--muted);
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.kpi-value {
-  font-size: 22px; font-weight: 900; color: var(--navy);
-  margin-top: 6px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -0.5px;
-}
-.kpi-value.green { color: var(--green); }
-.kpi-value.red { color: var(--red); }
-.kpi-value.huge { font-size: 32px; }
-.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 4px; font-weight: 600; }
-
-/* 회사 순이익 카드 */
-.profit-card {
-  background: linear-gradient(135deg, #15803d, #16a34a);
-  color: white;
   border-radius: 16px;
-  padding: 22px;
-  margin-bottom: 12px;
-  box-shadow: 0 8px 20px rgba(21,128,61,0.25);
+  padding: 16px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
-.profit-card.cyan { background: linear-gradient(135deg, #0891b2, #06b6d4); box-shadow: 0 8px 20px rgba(8,145,178,0.25); }
-.profit-card.red { background: linear-gradient(135deg, #dc2626, #b91c1c); box-shadow: 0 8px 20px rgba(220,38,38,0.25); }
-.profit-label { font-size: 11px; opacity: 0.9; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.profit-formula { font-size: 11px; opacity: 0.8; margin-top: 4px; }
-.profit-value { font-size: 32px; font-weight: 900; margin-top: 12px; font-variant-numeric: tabular-nums; }
-.profit-rate { font-size: 13px; opacity: 0.95; margin-top: 4px; font-weight: 700; }
+.sec-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.sec-title { font-size: 15px; font-weight: 900; color: var(--ink); }
+.badge {
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  background: var(--hair); border: 1px solid var(--border);
+  border-radius: 999px; padding: 3px 10px;
+}
 
-/* 리스트 (TOP 바이어/품목) */
-.list-card {
-  background: var(--card);
-  border-radius: 14px;
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.kpi {
+  background: #fff;
   border: 1px solid var(--border);
-  overflow: hidden;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  min-width: 0;
 }
-.list-row {
-  display: flex; align-items: center;
-  padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
-}
-.list-row:last-child { border-bottom: none; }
-.list-rank {
-  width: 28px; height: 28px;
-  background: #f1f5f9;
-  color: var(--navy);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
+.kpi-label { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: 0.3px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.kpi-value { font-size: 24px; font-weight: 900; color: var(--ink); margin-top: 6px; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.kpi-value.neg { color: var(--red); }
+.kpi-sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.kpi-sub.neg { color: var(--red); }
+
+/* 범례 */
+.legend { display: flex; gap: 14px; margin-bottom: 10px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--muted); }
+.legend-dot { width: 9px; height: 9px; border-radius: 3px; }
+
+/* 월별 막대 행 */
+.brow { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.brow-label { width: 36px; flex: none; font-size: 13px; font-weight: 700; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.brow-bars { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.bar-track { height: 9px; border-radius: 4px; background: var(--hair); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; }
+.brow-vals { flex: none; min-width: 80px; text-align: right; }
+.v-sales { font-size: 13.5px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.v-margin { font-size: 12.5px; font-weight: 700; color: var(--teal); font-variant-numeric: tabular-nums; }
+.v-margin.neg { color: var(--red); }
+.v-zero { color: #C4C4C8; }
+
+/* 그룹(품목/나라) 행 */
+.grow { padding: 11px 0; border-bottom: 1px solid var(--hair); }
+.grow:last-child { border-bottom: none; padding-bottom: 3px; }
+.grow-head { display: flex; align-items: baseline; gap: 8px; }
+.grow-name { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 800; color: var(--ink); overflow-wrap: anywhere; }
+.grow-sales { font-size: 14.5px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+.grow-bars { display: flex; flex-direction: column; gap: 3px; margin-top: 6px; }
+.grow-sub { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; font-size: 12px; font-weight: 600; color: var(--muted); font-variant-numeric: tabular-nums; }
+.m-val { font-weight: 800; color: var(--teal); }
+.m-val.neg { color: var(--red); }
+
+/* TOP 바이어 */
+.buyer-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--hair); }
+.buyer-row:last-child { border-bottom: none; padding-bottom: 3px; }
+.rank {
+  width: 26px; height: 26px; border-radius: 8px;
+  background: var(--hair); color: var(--ink);
   font-size: 13px; font-weight: 900;
-  margin-right: 12px;
+  display: flex; align-items: center; justify-content: center; flex: none;
 }
-.list-rank.gold { background: #fef3c7; color: #b45309; }
-.list-rank.silver { background: #f1f5f9; color: #475569; }
-.list-rank.bronze { background: #ffedd5; color: #c2410c; }
-.list-name {
-  flex: 1;
-  font-size: 14px; font-weight: 700; color: var(--text);
-}
-.list-amount {
-  font-size: 14px; font-weight: 800; color: var(--navy);
-  font-variant-numeric: tabular-nums;
-}
-.list-margin {
-  font-size: 11px; color: var(--muted); margin-top: 2px;
-  font-weight: 600;
-}
+.rank.top { background: #111; color: #fff; }
+.buyer-mid { flex: 1; min-width: 0; }
+.buyer-name { font-size: 14.5px; font-weight: 800; overflow-wrap: anywhere; }
+.buyer-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 1px; font-variant-numeric: tabular-nums; }
+.buyer-track { height: 5px; border-radius: 3px; background: var(--hair); margin-top: 6px; overflow: hidden; }
+.buyer-bar { height: 100%; border-radius: 3px; }
+.buyer-margin { flex: none; font-size: 14.5px; font-weight: 900; color: var(--teal); font-variant-numeric: tabular-nums; }
+.buyer-margin.neg { color: var(--red); }
+
+/* 적자 거래 */
+.loss-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
+.loss-row:last-child { border-bottom: none; padding-bottom: 3px; }
+.loss-info { flex: 1; min-width: 0; }
+.loss-inv { font-size: 13.5px; font-weight: 800; overflow-wrap: anywhere; }
+.loss-sub { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
+.loss-val { flex: none; font-size: 14px; font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; }
+.loss-empty { font-size: 13.5px; color: var(--muted); font-weight: 600; padding: 4px 0; }
+.loss-more { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 8px; text-align: right; }
 
 /* 로딩/에러 */
-.loading, .error-msg {
-  padding: 60px 20px;
-  text-align: center;
-  color: var(--muted);
-}
-.loading-spinner {
-  width: 40px; height: 40px;
+.state { padding: 56px 20px; text-align: center; color: var(--muted); font-size: 14px; font-weight: 600; }
+.state.error { color: var(--red); }
+.state-icon { font-size: 28px; margin-bottom: 8px; }
+.state-sub { margin-top: 8px; font-size: 12px; color: var(--muted); }
+.spinner {
+  width: 36px; height: 36px;
   border: 4px solid var(--border);
-  border-top-color: var(--navy);
+  border-top-color: #111;
   border-radius: 50%;
-  margin: 0 auto 16px;
+  margin: 0 auto 14px;
   animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-.error-msg { color: var(--red); }
 
 /* 푸터 */
-.footer {
-  text-align: center;
-  padding: 24px 20px;
-  font-size: 11px; color: var(--muted);
-  font-weight: 600;
-}
-.lock-btn {
-  margin-top: 14px;
-  padding: 8px 20px;
-  background: white;
+.footer { max-width: 640px; margin: 0 auto; text-align: center; padding: 10px 20px 28px; }
+.updated-at { font-size: 12px; color: var(--muted); font-weight: 600; font-variant-numeric: tabular-nums; }
+.footer-btns { display: flex; gap: 10px; justify-content: center; margin-top: 12px; }
+.footer-btn {
+  padding: 11px 22px;
+  background: #fff;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--navy);
-  font-size: 12px; font-weight: 700;
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 14px; font-weight: 800;
   cursor: pointer;
 }
-
-/* 반응형 — 큰 화면 */
-@media (min-width: 600px) {
-  .main { max-width: 600px; margin: 0 auto; padding: 24px; }
-}
+.footer-btn.primary { background: #111; color: #fff; border-color: #111; }
+.copyright { margin-top: 16px; font-size: 11px; color: #A1A1AA; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -283,7 +267,7 @@ html, body {
     <div class="login-subtitle">현농프레쉬 모바일 대시보드</div>
     <input id="pwd" type="password" class="login-input" placeholder="••••" inputmode="numeric" maxlength="20" autofocus>
     <div id="login-error" class="login-error" style="display:none;">❌ 비밀번호가 틀렸어요</div>
-    <button id="login-btn" class="login-btn">로그인 →</button>
+    <button id="login-btn" class="login-btn" type="button">로그인 →</button>
   </div>
 </div>
 
@@ -291,46 +275,226 @@ html, body {
 <div id="app" style="display:none;">
   <header class="header">
     <div class="header-row">
-      <span style="font-size:22px;">🍐</span>
+      <span class="header-logo">🍐</span>
       <h1>마진 마스터</h1>
-      <button id="refresh" class="refresh-btn">🔄</button>
+      <div class="header-status" id="header-status">─</div>
+      <button id="refresh" class="refresh-btn" type="button">🔄</button>
     </div>
-    <div class="header-status" id="header-status">─</div>
   </header>
 
   <div class="season-tabs" id="season-tabs"></div>
 
-  <div class="main" id="content">
-    <div class="loading">
-      <div class="loading-spinner"></div>
-      <div>데이터 불러오는 중...</div>
-    </div>
-  </div>
+  <main class="main" id="content"></main>
 
-  <div class="footer">
-    © 2026 현농프레쉬 · v1.0
-    <br>
-    <button class="lock-btn" id="lock-btn">🔒 잠그기</button>
-  </div>
+  <footer class="footer">
+    <div id="updated-at" class="updated-at">─</div>
+    <div class="footer-btns">
+      <button id="refresh-bottom" class="footer-btn primary" type="button">🔄 새로고침</button>
+      <button id="lock-btn" class="footer-btn" type="button">🔒 잠그기</button>
+    </div>
+    <div class="copyright">© 2026 현농프레쉬 · 모바일 대시보드 v2.0</div>
+  </footer>
 </div>
 
 <script>
+'use strict';
 // ════════════════════════════════════════════════════
-// 설정 — Apps Script URL을 여기에!
+// 설정
 // ════════════════════════════════════════════════════
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz2gUf5lC7ufwD8ACdcN2VPI7Yad3m1kyngG4du1bpiQAmwAynjpCIFAgo8hhScxgoG/exec';
 const PASSWORD = '1004';
-let txs = [];
+
+// 데스크톱 앱(sheets.ts)과 동일: 정산 완료된 마지막 시즌 — 이 시즌 이하 저장값은 그대로 신뢰
+const SETTLED_SEASON_MAX = 2025;
+
+// 차트 전용 유채색 (프레임은 블랙&화이트)
+const C_SALES = '#2a78d6';   // 매출
+const C_MARGIN = '#1baf7a';  // 찐마진
+const C_LOSS_BAR = '#e34948';// 적자 막대
+const C_COUNT = '#4a3aa7';   // 건수
+
+// 과일 고유색 — 데스크톱 Dashboard.tsx와 동일
+const PRODUCT_COLORS = {
+  '배': '#eda100',
+  '샤인머스캣': '#1baf7a',
+  '단감': '#eb6834',
+  '딸기': '#e87ba4',
+  '키위': '#008300',
+  '사과': '#2a78d6',
+};
+function productColor(name) {
+  if (!name) return '#4a3aa7';
+  if (PRODUCT_COLORS[name]) return PRODUCT_COLORS[name];
+  const n = String(name).toLowerCase();
+  if (n.includes('딸기') || n.includes('strawberry')) return '#e87ba4';
+  if (n.includes('샤인') || n.includes('포도') || n.includes('grape') || n.includes('muscat')) return '#1baf7a';
+  if (n.includes('사과') || n.includes('apple')) return '#2a78d6';
+  if (n.includes('배') || n.includes('pear')) return '#eda100';
+  if (n.includes('키위') || n.includes('kiwi')) return '#008300';
+  if (n.includes('감') || n.includes('persimmon')) return '#eb6834';
+  return '#4a3aa7';
+}
+function productEmoji(name) {
+  const n = String(name || '').toLowerCase();
+  if (/딸기|strawberry/.test(n)) return '🍓';
+  if (/샤인|포도|grape|muscat/.test(n)) return '🍇';
+  if (/사과|apple/.test(n)) return '🍎';
+  if (/배|pear/.test(n)) return '🍐';
+  if (/복숭아|peach/.test(n)) return '🍑';
+  if (/감|persimmon/.test(n)) return '🟠';
+  if (/귤|오렌지|orange|mandarin/.test(n)) return '🍊';
+  if (/키위|kiwi/.test(n)) return '🥝';
+  if (/멜론|참외|melon/.test(n)) return '🍈';
+  if (/수박|watermelon/.test(n)) return '🍉';
+  return '📦';
+}
+
+let txs = [];            // 정규화된 거래
 let currentSeason = null;
 
-// ─── 로그인 처리 ───
+// ════════════════════════════════════════════════════
+// DOM 헬퍼 — 모든 동적 문자열은 textContent로만 삽입 (XSS 방지)
+// ════════════════════════════════════════════════════
+function h(tag, cls, text) {
+  const el = document.createElement(tag);
+  if (cls) el.className = cls;
+  if (text !== undefined && text !== null) el.textContent = text;
+  return el;
+}
+function barTrack(color, widthPct, height) {
+  const track = h('div', 'bar-track');
+  if (height) track.style.height = height;
+  const fill = h('div', 'bar-fill');
+  fill.style.background = color;
+  fill.style.width = widthPct;
+  track.appendChild(fill);
+  return track;
+}
+function barW(v, max) {
+  if (!v || v <= 0 || !max || max <= 0) return '0%';
+  return Math.min(100, Math.max(2, (v / max) * 100)) + '%';
+}
+
+// ════════════════════════════════════════════════════
+// 숫자/날짜 유틸 — 데스크톱 sheets.ts 포팅
+// ════════════════════════════════════════════════════
+function num(v) {
+  if (v === null || v === undefined || v === '') return 0;
+  if (typeof v === 'number') return isFinite(v) ? v : 0;
+  const n = parseFloat(String(v).replace(/,/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+function serialToDate(n) {
+  // Excel serial (30000~70000) → 'YYYY-MM-DD'
+  if (!isFinite(n) || n < 30000 || n > 70000) return '';
+  const d = new Date(Math.round((n - 25569) * 86400 * 1000));
+  if (isNaN(d.getTime())) return '';
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+function dateStr(v) {
+  if (v === null || v === undefined || v === '') return '';
+  if (typeof v === 'string') {
+    const m = v.match(/(\d{4})[-/.]\s*(\d{1,2})[-/.]\s*(\d{1,2})/);
+    if (m) return m[1] + '-' + m[2].padStart(2, '0') + '-' + m[3].padStart(2, '0');
+    if (/^\d+(\.\d+)?$/.test(v.trim())) return serialToDate(Number(v));
+    return '';
+  }
+  if (typeof v === 'number') return serialToDate(v);
+  return '';
+}
+// 시즌 = 7월~익년 6월, 라벨 = 시작 연도
+function seasonOf(ds) {
+  if (!ds) return null;
+  const y = parseInt(ds.slice(0, 4), 10);
+  const m = parseInt(ds.slice(5, 7), 10);
+  if (!y || !m) return null;
+  return m >= 7 ? y : y - 1;
+}
+// 인보이스 prefix → 바이어 코드 (데스크톱 extractBuyerCode와 동일)
+function extractBuyerCode(invoiceNo) {
+  if (!invoiceNo) return '';
+  const s = String(invoiceNo).trim();
+  const m = s.match(/^([A-Z&]+)/i);
+  if (m) return m[1].toUpperCase();
+  const dash = s.indexOf('-');
+  return dash > 0 ? s.slice(0, dash).toUpperCase() : s.toUpperCase();
+}
+// 금액 축약: 54.9억 / 4,050만 / 3,500원
+function fmtShort(n) {
+  if (!n) return '0원';
+  const abs = Math.abs(n);
+  if (abs >= 1e8) return (n / 1e8).toFixed(1) + '억';
+  if (abs >= 1e4) return Math.round(n / 1e4).toLocaleString('ko-KR') + '만';
+  return Math.round(n).toLocaleString('ko-KR') + '원';
+}
+function fmtFull(n) {
+  return Math.round(n || 0).toLocaleString('ko-KR') + '원';
+}
+function fmtPct(rate) {
+  if (!isFinite(rate)) return '-';
+  return (rate * 100).toFixed(1) + '%';
+}
+
+// ════════════════════════════════════════════════════
+// 거래 정규화 — 데스크톱 rowsToTransactions와 같은 결과
+// ════════════════════════════════════════════════════
+function normalizeTx(r) {
+  const shippingDate = dateStr(r.shippingDate);
+  const season = seasonOf(shippingDate);
+  const costMaterial = num(r.costMaterial);
+  const costPacking = num(r.costPacking);
+  const costInland = num(r.costInland);
+  const costFreight = num(r.costFreight);
+  const costOther = num(r.costOther);
+  const costSum = costMaterial + costPacking + costInland + costFreight + costOther;
+
+  // 폴백 ① 공급가액: 이번 시즌(2026~)부터 시트 수식 결손 행(공급가액 0)은 비용 합으로 계산.
+  //   정산 완료 시즌(~2025)은 저장값 그대로 (과거 확정 숫자 불변).
+  let supplyAmount = num(r.supplyAmount);
+  if (season !== null && season > SETTLED_SEASON_MAX && supplyAmount === 0 && costSum > 0) {
+    supplyAmount = costSum;
+  }
+
+  const actualReceivedKrw = num(r.actualReceivedKrw);
+
+  // 폴백 ② 찐마진: 시트 값이 0인데 (매출-공급가액)과 다르면 수식 결손 행 → 계산값 사용
+  let trueMargin = num(r.trueMargin);
+  const calcMargin = actualReceivedKrw - supplyAmount;
+  if (trueMargin === 0 && calcMargin !== 0) trueMargin = calcMargin;
+
+  return {
+    invoiceNo: String(r.invoiceNo || ''),
+    shippingDate,
+    season,
+    year: shippingDate ? parseInt(shippingDate.slice(0, 4), 10) : 0,
+    month: shippingDate ? parseInt(shippingDate.slice(5, 7), 10) : 0,
+    country: String(r.country || ''),
+    origin: String(r.origin || ''),
+    product: String(r.product || ''),
+    buyer: String(r.buyer || ''),
+    costMaterial, costPacking, costInland, costFreight, costOther,
+    supplyAmount, actualReceivedKrw, trueMargin,
+    status: String(r.status || ''),
+  };
+}
+
+// 미확정 거래 판단 — 데스크톱 isIncompleteTransaction과 동일
+function isIncomplete(t) {
+  const realCosts = (t.costMaterial || 0) + (t.costInland || 0) + (t.costFreight || 0) + (t.costOther || 0);
+  if (realCosts === 0) return true;
+  if (t.actualReceivedKrw > 0 && t.supplyAmount > 0 && t.supplyAmount / t.actualReceivedKrw < 0.1) return true;
+  return false;
+}
+
+// ════════════════════════════════════════════════════
+// 로그인 / 잠그기
+// ════════════════════════════════════════════════════
 const pwdInput = document.getElementById('pwd');
-const loginBtn = document.getElementById('login-btn');
 const loginError = document.getElementById('login-error');
+const contentEl = document.getElementById('content');
 
 function tryLogin() {
-  const v = pwdInput.value.trim();
-  if (v === PASSWORD) {
+  if (pwdInput.value.trim() === PASSWORD) {
     sessionStorage.setItem('mobAuthed', 'true');
     showApp();
   } else {
@@ -341,9 +505,8 @@ function tryLogin() {
     pwdInput.focus();
   }
 }
-
-loginBtn.addEventListener('click', tryLogin);
-pwdInput.addEventListener('keypress', e => { if (e.key === 'Enter') tryLogin(); });
+document.getElementById('login-btn').addEventListener('click', tryLogin);
+pwdInput.addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
 
 document.getElementById('lock-btn').addEventListener('click', () => {
   sessionStorage.removeItem('mobAuthed');
@@ -352,295 +515,312 @@ document.getElementById('lock-btn').addEventListener('click', () => {
   pwdInput.value = '';
   pwdInput.focus();
 });
-
 document.getElementById('refresh').addEventListener('click', loadData);
-
-if (sessionStorage.getItem('mobAuthed') === 'true') {
-  showApp();
-}
+document.getElementById('refresh-bottom').addEventListener('click', () => {
+  loadData();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 
 function showApp() {
   document.getElementById('login').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   loadData();
 }
+if (sessionStorage.getItem('mobAuthed') === 'true') showApp();
 
-// ─── 데이터 로드 ───
+// ════════════════════════════════════════════════════
+// 데이터 로드
+// ════════════════════════════════════════════════════
+function showLoading() {
+  contentEl.textContent = '';
+  const box = h('div', 'state');
+  box.appendChild(h('div', 'spinner'));
+  box.appendChild(h('div', null, '데이터 불러오는 중...'));
+  contentEl.appendChild(box);
+}
+function showError(msg) {
+  contentEl.textContent = '';
+  const box = h('div', 'state error');
+  box.appendChild(h('div', 'state-icon', '❌'));
+  box.appendChild(h('div', null, msg));
+  box.appendChild(h('div', 'state-sub', '인터넷 확인 후 새로고침을 눌러주세요'));
+  contentEl.appendChild(box);
+}
+
 async function loadData() {
-  const content = document.getElementById('content');
-  content.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>데이터 불러오는 중...</div></div>';
-
-  if (APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
-    content.innerHTML = '<div class="error-msg">⚠ Apps Script URL이 설정되지 않았어요.<br>HTML 파일의 APPS_SCRIPT_URL을 수정해주세요.</div>';
-    return;
-  }
-
+  showLoading();
   try {
     const res = await fetch(APPS_SCRIPT_URL + '?pwd=' + PASSWORD);
+    if (!res.ok) throw new Error('서버 응답 오류 (' + res.status + ')');
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    txs = data.txs || [];
+    txs = (data.txs || []).map(normalizeTx);
+
+    const now = new Date();
     document.getElementById('header-status').textContent =
-      `${txs.length}건 · ${new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})}`;
+      txs.length + '건 · ' + now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('updated-at').textContent =
+      '마지막 업데이트 ' + now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     renderSeasonTabs();
     renderDashboard();
   } catch (e) {
-    content.innerHTML = `<div class="error-msg">❌ ${e.message}<br><br>인터넷 확인 후 🔄 다시 시도</div>`;
+    showError(String(e && e.message ? e.message : e));
   }
 }
 
-// ─── 시즌 탭 렌더 ───
-function getSeasonYear(t) {
-  const d = new Date(t.shippingDate);
-  if (isNaN(d)) return null;
-  const y = d.getFullYear();
-  const m = d.getMonth() + 1;
-  return m >= 7 ? y : y - 1;
-}
-
+// ════════════════════════════════════════════════════
+// 시즌 탭 — 데이터에 존재하는 시즌만, 기본 = 최신
+// ════════════════════════════════════════════════════
 function renderSeasonTabs() {
-  const seasonsSet = new Set();
-  txs.forEach(t => { const y = getSeasonYear(t); if (y) seasonsSet.add(y); });
-  const seasons = [...seasonsSet].sort((a,b) => b - a);
-  if (currentSeason === null) currentSeason = seasons[0];
+  const set = new Set();
+  txs.forEach(t => { if (t.season !== null) set.add(t.season); });
+  const seasons = [...set].sort((a, b) => b - a);
+  const tabsEl = document.getElementById('season-tabs');
+  tabsEl.textContent = '';
+  if (seasons.length === 0) { currentSeason = null; return; }
+  if (currentSeason === null || !set.has(currentSeason)) currentSeason = seasons[0];
 
-  const tabs = document.getElementById('season-tabs');
-  tabs.innerHTML = seasons.map(y => `
-    <div class="season-tab ${y === currentSeason ? 'active' : ''}" data-y="${y}">
-      📅 ${y}년 시즌
-    </div>
-  `).join('');
-
-  tabs.querySelectorAll('.season-tab').forEach(el => {
-    el.addEventListener('click', () => {
-      currentSeason = parseInt(el.dataset.y);
+  seasons.forEach(y => {
+    const b = h('button', 'season-tab' + (y === currentSeason ? ' active' : ''), y + '년 시즌');
+    b.type = 'button';
+    b.addEventListener('click', () => {
+      if (currentSeason === y) return;
+      currentSeason = y;
       renderSeasonTabs();
       renderDashboard();
     });
+    tabsEl.appendChild(b);
   });
 }
 
-// ─── 대시보드 렌더 ───
-function isIncomplete(t) {
-  const realCosts = (t.costMaterial||0) + (t.costInland||0) + (t.costFreight||0) + (t.costOther||0);
-  if (realCosts === 0) return true;
-  if (t.actualReceivedKrw > 0 && t.supplyAmount > 0 && t.supplyAmount / t.actualReceivedKrw < 0.1) return true;
-  return false;
+// ════════════════════════════════════════════════════
+// 대시보드 렌더
+// ════════════════════════════════════════════════════
+function sectionCard(title) {
+  const card = h('section', 'card');
+  const head = h('div', 'sec-head');
+  head.appendChild(h('h2', 'sec-title', title));
+  card.appendChild(head);
+  return card;
 }
-
-function extractBuyerCode(invoiceNo) {
-  if (!invoiceNo) return '';
-  const m = String(invoiceNo).match(/^([A-Z&]+)/i);
-  return m ? m[1].toUpperCase() : '';
+function legendRow(items) {
+  const l = h('div', 'legend');
+  items.forEach(([color, label]) => {
+    const it = h('span', 'legend-item');
+    const dot = h('span', 'legend-dot');
+    dot.style.background = color;
+    it.appendChild(dot);
+    it.appendChild(document.createTextNode(label));
+    l.appendChild(it);
+  });
+  return l;
 }
-
-function fmt(n) {
-  if (!n || n === 0) return '0';
-  if (Math.abs(n) >= 100000000) return (n / 100000000).toFixed(1) + '억';
-  if (Math.abs(n) >= 10000) return (n / 10000).toFixed(0) + '만';
-  return Math.round(n).toLocaleString();
-}
-function fmtFull(n) {
-  if (!n || n === 0) return '0원';
-  return n.toLocaleString() + '원';
-}
-
-function loadFixedCosts(year) {
-  try {
-    const raw = localStorage.getItem('fixedCosts_' + year);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return {};
-}
-function loadIncomeSupport(year) {
-  try {
-    const raw = localStorage.getItem('incomeSupport_' + year);
-    if (raw) return JSON.parse(raw);
-  } catch {}
-  return {};
+function valueCol(sales, margin) {
+  const vals = h('div', 'brow-vals');
+  vals.appendChild(h('div', 'v-sales' + (sales === 0 ? ' v-zero' : ''), sales === 0 ? '–' : fmtShort(sales)));
+  vals.appendChild(h('div', 'v-margin' + (margin < 0 ? ' neg' : '') + (margin === 0 ? ' v-zero' : ''), margin === 0 ? '–' : fmtShort(margin)));
+  return vals;
 }
 
 function renderDashboard() {
-  const seasonTxs = txs.filter(t => getSeasonYear(t) === currentSeason && !isIncomplete(t));
-  if (seasonTxs.length === 0) {
-    document.getElementById('content').innerHTML = '<div class="loading">선택한 시즌 데이터 없음</div>';
+  contentEl.textContent = '';
+  if (currentSeason === null) {
+    const box = h('div', 'state');
+    box.appendChild(h('div', 'state-icon', '📭'));
+    box.appendChild(h('div', null, '표시할 거래 데이터가 없습니다'));
+    contentEl.appendChild(box);
     return;
   }
 
-  // KPI
+  const seasonAll = txs.filter(t => t.season === currentSeason);
+  const seasonTxs = seasonAll.filter(t => !isIncomplete(t));       // KPI·차트 대상
+  const excludedCount = seasonAll.length - seasonTxs.length;        // 미확정 제외 건수
+
+  if (seasonAll.length === 0) {
+    const box = h('div', 'state');
+    box.appendChild(h('div', 'state-icon', '📭'));
+    box.appendChild(h('div', null, '선택한 시즌 데이터 없음'));
+    contentEl.appendChild(box);
+    return;
+  }
+
+  // ── KPI 집계 (데스크톱 Dashboard.tsx와 동일 규칙) ──
   const sales = seasonTxs.reduce((s, t) => s + t.actualReceivedKrw, 0);
-  const cost = seasonTxs.reduce((s, t) => s + t.supplyAmount, 0);
   const margin = seasonTxs.reduce((s, t) => s + t.trueMargin, 0);
-  const rate = sales > 0 ? margin / sales : 0;
+  const rate = sales > 0 ? margin / sales : 0;   // 마진율 = 찐마진 / 매출
+  const lossTxs = seasonTxs.filter(t => t.trueMargin < 0 && t.actualReceivedKrw > 0);
 
-  // 회사 순이익
-  const fixed = loadFixedCosts(currentSeason);
-  const income = loadIncomeSupport(currentSeason);
-  const totalFixed = Object.values(fixed).reduce((s, v) => s + (Number(v) || 0), 0);
-  const totalIncome = Object.values(income).reduce((s, v) => s + (Number(v) || 0), 0);
-  const companyProfit = margin - totalFixed;
-  const realProfit = companyProfit + totalIncome;
+  // ── ① KPI 2×2 ──
+  const kpiSec = h('div');
+  const kpiHead = h('div', 'sec-head');
+  kpiHead.appendChild(h('h2', 'sec-title', '📊 ' + currentSeason + '년 시즌 (' + currentSeason + '.07 ~ ' + (currentSeason + 1) + '.06)'));
+  if (excludedCount > 0) kpiHead.appendChild(h('span', 'badge', '미확정 ' + excludedCount + '건 제외'));
+  kpiSec.appendChild(kpiHead);
 
-  // 바이어 TOP
-  const buyerMap = {};
-  seasonTxs.forEach(t => {
-    const code = extractBuyerCode(t.invoiceNo) || t.buyer;
-    if (!code) return;
-    if (!buyerMap[code]) buyerMap[code] = { name: code, sales: 0, margin: 0, count: 0 };
-    buyerMap[code].sales += t.actualReceivedKrw;
-    buyerMap[code].margin += t.trueMargin;
-    buyerMap[code].count += 1;
+  const grid = h('div', 'kpi-grid');
+  grid.appendChild(kpiCard('매출', C_SALES, fmtShort(sales), fmtFull(sales), false));
+  grid.appendChild(kpiCard('찐마진', margin < 0 ? C_LOSS_BAR : C_MARGIN, fmtShort(margin), fmtFull(margin), margin < 0));
+  grid.appendChild(kpiCard('마진율', C_MARGIN, fmtPct(rate), '찐마진 ÷ 매출', rate < 0));
+  const cntCard = kpiCard('거래 건수', C_COUNT, seasonTxs.length + '건', lossTxs.length > 0 ? '적자 ' + lossTxs.length + '건' : '적자 없음', false);
+  if (lossTxs.length > 0) cntCard.querySelector('.kpi-sub').classList.add('neg');
+  grid.appendChild(cntCard);
+  kpiSec.appendChild(grid);
+  contentEl.appendChild(kpiSec);
+
+  // ── ② 월별 매출·찐마진 (7월 → 익년 6월) ──
+  const MONTHS = [[7,0],[8,0],[9,0],[10,0],[11,0],[12,0],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1]];
+  const monthly = MONTHS.map(([m, off]) => {
+    const y = currentSeason + off;
+    const mt = seasonTxs.filter(t => t.year === y && t.month === m);
+    return {
+      label: m + '월',
+      sales: mt.reduce((s, t) => s + t.actualReceivedKrw, 0),
+      margin: mt.reduce((s, t) => s + t.trueMargin, 0),
+    };
   });
-  const topBuyers = Object.values(buyerMap).sort((a,b) => b.sales - a.sales).slice(0, 8);
-
-  // 품목 TOP
-  const productMap = {};
-  seasonTxs.forEach(t => {
-    const p = t.product || '기타';
-    if (!productMap[p]) productMap[p] = { name: p, sales: 0, margin: 0 };
-    productMap[p].sales += t.actualReceivedKrw;
-    productMap[p].margin += t.trueMargin;
+  const mMax = Math.max(...monthly.map(r => Math.max(r.sales, Math.abs(r.margin))), 0);
+  const mCard = sectionCard('📈 월별 매출 · 찐마진');
+  mCard.appendChild(legendRow([[C_SALES, '매출'], [C_MARGIN, '찐마진'], [C_LOSS_BAR, '적자']]));
+  monthly.forEach(r => {
+    const row = h('div', 'brow');
+    row.appendChild(h('div', 'brow-label', r.label));
+    const bars = h('div', 'brow-bars');
+    bars.appendChild(barTrack(C_SALES, barW(r.sales, mMax)));
+    bars.appendChild(barTrack(r.margin < 0 ? C_LOSS_BAR : C_MARGIN, barW(Math.abs(r.margin), mMax)));
+    row.appendChild(bars);
+    row.appendChild(valueCol(r.sales, r.margin));
+    mCard.appendChild(row);
   });
-  const topProducts = Object.values(productMap).sort((a,b) => b.sales - a.sales);
+  contentEl.appendChild(mCard);
 
-  // 산지 TOP
-  const originMap = {};
-  seasonTxs.forEach(t => {
-    const o = String(t.origin || '').trim() || '기타';
-    if (!originMap[o]) originMap[o] = { name: o, sales: 0, margin: 0, count: 0 };
-    originMap[o].sales += t.actualReceivedKrw;
-    originMap[o].margin += t.trueMargin;
-    originMap[o].count += 1;
+  // ── 그룹 집계 헬퍼 (데스크톱 groupBy와 동일 규칙) ──
+  function groupRows(keyFn) {
+    const map = new Map();
+    seasonTxs.forEach(t => {
+      const key = keyFn(t);
+      if (!key) return;
+      const cur = map.get(key) || { name: key, sales: 0, margin: 0, count: 0 };
+      cur.sales += t.actualReceivedKrw;
+      cur.margin += t.trueMargin;
+      cur.count += 1;
+      map.set(key, cur);
+    });
+    return [...map.values()].sort((a, b) => b.sales - a.sales);
+  }
+
+  // ── ③ 품목별 매출 & 찐마진 ──
+  const byProduct = groupRows(t => String(t.product || '').trim());
+  if (byProduct.length > 0) {
+    const pMax = Math.max(...byProduct.map(g => Math.max(g.sales, Math.abs(g.margin))), 0);
+    const pCard = sectionCard('🍐 품목별 매출 & 찐마진');
+    byProduct.forEach(g => {
+      pCard.appendChild(groupRow(productEmoji(g.name) + ' ' + g.name, g, pMax, productColor(g.name)));
+    });
+    contentEl.appendChild(pCard);
+  }
+
+  // ── ④ 나라별 매출 & 찐마진 ──
+  const byCountry = groupRows(t => {
+    const k = String(t.country || '').trim();
+    if (!k) return '';
+    return k.split('(')[0];   // 괄호 제거 후 그룹화 (데스크톱과 동일)
   });
-  const topOrigins = Object.values(originMap).sort((a,b) => b.sales - a.sales).slice(0, 10);
+  if (byCountry.length > 0) {
+    const cMax = Math.max(...byCountry.map(g => Math.max(g.sales, Math.abs(g.margin))), 0);
+    const cCard = sectionCard('🌏 나라별 매출 & 찐마진');
+    byCountry.forEach(g => {
+      cCard.appendChild(groupRow('🌏 ' + g.name, g, cMax, C_SALES));
+    });
+    contentEl.appendChild(cCard);
+  }
 
-  // 국가 TOP
-  const countryMap = {};
-  seasonTxs.forEach(t => {
-    const c = String(t.country || '').split('(')[0].trim() || '기타';
-    if (!countryMap[c]) countryMap[c] = { name: c, sales: 0, count: 0 };
-    countryMap[c].sales += t.actualReceivedKrw;
-    countryMap[c].count += 1;
-  });
-  const topCountries = Object.values(countryMap).sort((a,b) => b.sales - a.sales).slice(0, 10);
+  // ── ⑤ TOP 바이어 (찐마진순 TOP 10) ──
+  const byBuyer = groupRows(t => extractBuyerCode(t.invoiceNo) || String(t.buyer || '기타').trim())
+    .sort((a, b) => b.margin - a.margin)
+    .slice(0, 10);
+  if (byBuyer.length > 0) {
+    const bMax = Math.max(...byBuyer.map(g => Math.abs(g.margin)), 0);
+    const bCard = sectionCard('🏆 TOP 바이어 — 찐마진순');
+    byBuyer.forEach((g, i) => {
+      const row = h('div', 'buyer-row');
+      row.appendChild(h('div', 'rank' + (i < 3 ? ' top' : ''), String(i + 1)));
+      const mid = h('div', 'buyer-mid');
+      mid.appendChild(h('div', 'buyer-name', g.name));
+      mid.appendChild(h('div', 'buyer-sub', g.count + '건 · 매출 ' + fmtShort(g.sales)));
+      const track = h('div', 'buyer-track');
+      const fill = h('div', 'buyer-bar');
+      fill.style.background = g.margin < 0 ? C_LOSS_BAR : C_MARGIN;
+      fill.style.width = barW(Math.abs(g.margin), bMax);
+      track.appendChild(fill);
+      mid.appendChild(track);
+      row.appendChild(mid);
+      row.appendChild(h('div', 'buyer-margin' + (g.margin < 0 ? ' neg' : ''), fmtShort(g.margin)));
+      bCard.appendChild(row);
+    });
+    contentEl.appendChild(bCard);
+  }
 
-  document.getElementById('content').innerHTML = `
-    <div class="section">
-      <div class="section-title">📊 ${currentSeason}년 시즌 실적</div>
-      <div class="kpi-grid">
-        <div class="kpi full">
-          <div class="kpi-label">총 매출</div>
-          <div class="kpi-value huge">${fmt(sales)}</div>
-          <div class="kpi-sub">${fmtFull(sales)}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">공급가액</div>
-          <div class="kpi-value">${fmt(cost)}</div>
-          <div class="kpi-sub">${fmtFull(cost)}</div>
-        </div>
-        <div class="kpi">
-          <div class="kpi-label">거래 건수</div>
-          <div class="kpi-value">${seasonTxs.length}건</div>
-        </div>
-        <div class="kpi full">
-          <div class="kpi-label">찐마진 (판매 이익)</div>
-          <div class="kpi-value huge ${margin >= 0 ? 'green' : 'red'}">${fmt(margin)}</div>
-          <div class="kpi-sub">${fmtFull(margin)} · 마진율 ${(rate*100).toFixed(2)}%</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">🍐 품목별 매출</div>
-      <div class="list-card">
-        ${topProducts.map(p => `
-          <div class="list-row">
-            <div style="flex:1;" class="list-name">${productEmoji(p.name)} ${p.name}</div>
-            <div style="text-align:right;">
-              <div class="list-amount">${fmt(p.sales)}</div>
-              <div class="list-margin" style="color:${p.margin>=0?'var(--green)':'var(--red)'};">마진 ${fmt(p.margin)}</div>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">🛒 TOP 바이어 (매출 순)</div>
-      <div class="list-card">
-        ${topBuyers.map((b, i) => {
-          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-          const marginColor = b.margin >= 0 ? 'var(--green)' : 'var(--red)';
-          return `
-            <div class="list-row">
-              <div class="list-rank ${rankClass}">${i + 1}</div>
-              <div style="flex:1;">
-                <div class="list-name">${b.name}</div>
-                <div class="list-margin">${b.count}건 · 마진 <span style="color:${marginColor}; font-weight:800;">${fmt(b.margin)}</span></div>
-              </div>
-              <div class="list-amount">${fmt(b.sales)}</div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">🌾 산지 매출 순</div>
-      <div class="list-card">
-        ${topOrigins.map((o, i) => {
-          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-          const marginColor = o.margin >= 0 ? 'var(--green)' : 'var(--red)';
-          return `
-            <div class="list-row">
-              <div class="list-rank ${rankClass}">${i + 1}</div>
-              <div style="flex:1;">
-                <div class="list-name">🌾 ${o.name}</div>
-                <div class="list-margin">${o.count}건 · 마진 <span style="color:${marginColor}; font-weight:800;">${fmt(o.margin)}</span></div>
-              </div>
-              <div class="list-amount">${fmt(o.sales)}</div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-title">🌏 국가별 매출</div>
-      <div class="list-card">
-        ${topCountries.map((c, i) => {
-          const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
-          return `
-            <div class="list-row">
-              <div class="list-rank ${rankClass}">${i + 1}</div>
-              <div style="flex:1;">
-                <div class="list-name">🌏 ${c.name}</div>
-                <div class="list-margin">${c.count}건</div>
-              </div>
-              <div class="list-amount">${fmt(c.sales)}</div>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    </div>
-
-  `;
+  // ── ⑥ 적자 거래 (찐마진 음수 & 매출 > 0, 최대 10건) ──
+  const lossSorted = [...lossTxs].sort((a, b) => a.trueMargin - b.trueMargin);
+  const lCard = sectionCard('⚠️ 적자 거래');
+  if (lossSorted.length === 0) {
+    lCard.appendChild(h('div', 'loss-empty', '이번 시즌 적자 거래 없음 🎉'));
+  } else {
+    lossSorted.slice(0, 10).forEach(t => {
+      const row = h('div', 'loss-row');
+      const info = h('div', 'loss-info');
+      info.appendChild(h('div', 'loss-inv', t.invoiceNo || '(인보이스 없음)'));
+      const subParts = [];
+      if (t.product) subParts.push(t.product);
+      if (t.shippingDate) subParts.push(t.shippingDate);
+      if (subParts.length) info.appendChild(h('div', 'loss-sub', subParts.join(' · ')));
+      row.appendChild(info);
+      row.appendChild(h('div', 'loss-val', fmtShort(t.trueMargin)));
+      lCard.appendChild(row);
+    });
+    if (lossSorted.length > 10) {
+      lCard.appendChild(h('div', 'loss-more', '외 ' + (lossSorted.length - 10) + '건 더 있음'));
+    }
+  }
+  contentEl.appendChild(lCard);
 }
 
-function productEmoji(name) {
-  const n = String(name || '').toLowerCase();
-  if (/딸기|strawberry/.test(n)) return '🍓';
-  if (/샤인|포도|grape|muscat/.test(n)) return '🍇';
-  if (/배|pear/.test(n)) return '🍐';
-  if (/사과|apple/.test(n)) return '🍎';
-  if (/감|persimmon/.test(n)) return '🟠';
-  if (/복숭아|peach/.test(n)) return '🍑';
-  if (/귤|오렌지|mandarin/.test(n)) return '🍊';
-  if (/키위|kiwi/.test(n)) return '🥝';
-  if (/멜론|melon/.test(n)) return '🍈';
-  if (/수박|watermelon/.test(n)) return '🍉';
-  return '📦';
+function kpiCard(label, dotColor, value, sub, isNeg) {
+  const card = h('div', 'kpi');
+  const lab = h('div', 'kpi-label');
+  const dot = h('span', 'dot');
+  dot.style.background = dotColor;
+  lab.appendChild(dot);
+  lab.appendChild(document.createTextNode(label));
+  card.appendChild(lab);
+  card.appendChild(h('div', 'kpi-value' + (isNeg ? ' neg' : ''), value));
+  card.appendChild(h('div', 'kpi-sub', sub));
+  return card;
+}
+
+// 품목/나라 공용 행: 이름 + 매출액(우측) + 매출/찐마진 병렬 막대 + 서브(찐마진·마진율)
+function groupRow(displayName, g, max, salesColor) {
+  const row = h('div', 'grow');
+  const head = h('div', 'grow-head');
+  head.appendChild(h('div', 'grow-name', displayName));
+  head.appendChild(h('div', 'grow-sales', fmtShort(g.sales)));
+  row.appendChild(head);
+  const bars = h('div', 'grow-bars');
+  bars.appendChild(barTrack(salesColor, barW(g.sales, max)));
+  bars.appendChild(barTrack(g.margin < 0 ? C_LOSS_BAR : C_MARGIN, barW(Math.abs(g.margin), max), '6px'));
+  row.appendChild(bars);
+  const sub = h('div', 'grow-sub');
+  const left = h('span');
+  left.appendChild(document.createTextNode('찐마진 '));
+  left.appendChild(h('span', 'm-val' + (g.margin < 0 ? ' neg' : ''), fmtShort(g.margin)));
+  sub.appendChild(left);
+  const rateTxt = g.sales > 0
+    ? '마진율 ' + fmtPct(g.margin / g.sales) + ' · ' + g.count + '건'
+    : g.count + '건';
+  sub.appendChild(h('span', null, rateTxt));
+  row.appendChild(sub);
+  return row;
 }
 </script>
 </body>
