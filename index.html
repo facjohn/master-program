@@ -215,15 +215,27 @@ button { font-family: inherit; }
 .buyer-margin { flex: none; font-size: 14.5px; font-weight: 900; color: var(--teal); font-variant-numeric: tabular-nums; }
 .buyer-margin.neg { color: var(--red); }
 
-/* 적자 거래 */
-.loss-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--hair); }
-.loss-row:last-child { border-bottom: none; padding-bottom: 3px; }
-.loss-info { flex: 1; min-width: 0; }
-.loss-inv { font-size: 13.5px; font-weight: 800; overflow-wrap: anywhere; }
-.loss-sub { font-size: 11.5px; color: var(--muted); font-weight: 600; margin-top: 1px; }
-.loss-val { flex: none; font-size: 14px; font-weight: 900; color: var(--red); font-variant-numeric: tabular-nums; }
-.loss-empty { font-size: 13.5px; color: var(--muted); font-weight: 600; padding: 4px 0; }
-.loss-more { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 8px; text-align: right; }
+/* 회사 순이익 */
+.sec-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin: -6px 0 12px; line-height: 1.5; }
+.profit-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.pchip { background: #fff; border: 1.5px solid var(--border); border-radius: 12px; padding: 10px 12px; }
+.pchip-label { font-size: 11px; font-weight: 800; color: var(--muted); letter-spacing: 0.3px; }
+.pchip-value { font-size: 16px; font-weight: 900; margin-top: 3px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.pchip-value.minus { color: #52525B; }
+.pchip-value.plus { color: var(--teal); }
+.pchip-value.neg { color: var(--red); }
+.cat-title { font-size: 12px; font-weight: 900; color: var(--muted); margin: 12px 0 6px; }
+.cat-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+.cat-chip { display: flex; gap: 8px; align-items: baseline; background: #F4F4F5; border-radius: 9px; padding: 6px 10px; font-size: 12px; font-weight: 700; }
+.cat-chip .amt { font-weight: 900; font-variant-numeric: tabular-nums; }
+.profit-card { border-radius: 14px; padding: 16px; margin-top: 12px; color: #fff; }
+.profit-card.pos { background: linear-gradient(135deg, #000, #3F3F46); }
+.profit-card.neg { background: linear-gradient(135deg, #B91C1C, #DC2626); }
+.profit-card .pc-title { font-size: 12.5px; font-weight: 900; opacity: 0.92; }
+.profit-card .pc-formula { font-size: 11px; font-weight: 600; opacity: 0.75; margin-top: 2px; }
+.profit-card .pc-value { font-size: 26px; font-weight: 900; margin-top: 8px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.profit-card .pc-sub { font-size: 12px; font-weight: 700; opacity: 0.85; margin-top: 4px; }
+.profit-note { background: #F4F4F5; border: 1.5px dashed #A1A1AA; border-radius: 12px; padding: 14px; font-size: 12.5px; font-weight: 600; color: #3F3F46; line-height: 1.7; }
 
 /* 로딩/에러 */
 .state { padding: 56px 20px; text-align: center; color: var(--muted); font-size: 14px; font-weight: 600; }
@@ -350,6 +362,7 @@ function productEmoji(name) {
 }
 
 let txs = [];            // 정규화된 거래
+let fixedCosts = {};     // 시즌별 고정비/지원금 (백엔드 fixedCosts)
 let currentSeason = null;
 
 // ════════════════════════════════════════════════════
@@ -555,6 +568,7 @@ async function loadData() {
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     txs = (data.txs || []).map(normalizeTx);
+    fixedCosts = data.fixedCosts || {};
 
     const now = new Date();
     document.getElementById('header-status').textContent =
@@ -761,29 +775,84 @@ function renderDashboard() {
     contentEl.appendChild(bCard);
   }
 
-  // ── ⑥ 적자 거래 (찐마진 음수 & 매출 > 0, 최대 10건) ──
-  const lossSorted = [...lossTxs].sort((a, b) => a.trueMargin - b.trueMargin);
-  const lCard = sectionCard('⚠️ 적자 거래');
-  if (lossSorted.length === 0) {
-    lCard.appendChild(h('div', 'loss-empty', '이번 시즌 적자 거래 없음 🎉'));
+  // ── ⑥ 회사 순이익 — 데스크톱 '회사 순이익' 섹션과 동일 공식 ──
+  //    순이익 = 총매출 − 총매입 − 고정비 / 현실 이익 = + 정부지원금
+  const supply = seasonTxs.reduce((s, t) => s + t.supplyAmount, 0);
+  const fCard = sectionCard('🏢 회사 순이익');
+  fCard.appendChild(h('div', 'sec-sub', '찐마진에서 고정비(인건비/임대료 등)를 차감한 실제 회사 이익'));
+
+  const fx = fixedCosts[String(currentSeason)];
+  // 새 백엔드(A~Z 매핑) 여부 판별 — 옛 백엔드는 '공과금' 키가 없어 새 카테고리(Q~Z) 값이 빠짐
+  const fxReady = fx && fx.fixed && Object.prototype.hasOwnProperty.call(fx.fixed, '공과금');
+  if (!fxReady) {
+    const note = h('div', 'profit-note');
+    note.appendChild(h('div', null, '고정비 데이터를 불러오려면 백엔드(Apps Script) 업데이트가 1회 필요합니다.'));
+    note.appendChild(h('div', null, 'PC의 margin-program/mobile 폴더 안내에 따라 재배포하면 이 자리에 회사 순이익이 표시됩니다.'));
+    fCard.appendChild(note);
   } else {
-    lossSorted.slice(0, 10).forEach(t => {
-      const row = h('div', 'loss-row');
-      const info = h('div', 'loss-info');
-      info.appendChild(h('div', 'loss-inv', t.invoiceNo || '(인보이스 없음)'));
-      const subParts = [];
-      if (t.product) subParts.push(t.product);
-      if (t.shippingDate) subParts.push(t.shippingDate);
-      if (subParts.length) info.appendChild(h('div', 'loss-sub', subParts.join(' · ')));
-      row.appendChild(info);
-      row.appendChild(h('div', 'loss-val', fmtShort(t.trueMargin)));
-      lCard.appendChild(row);
-    });
-    if (lossSorted.length > 10) {
-      lCard.appendChild(h('div', 'loss-more', '외 ' + (lossSorted.length - 10) + '건 더 있음'));
+    const fixedTotal = Object.values(fx.fixed).reduce((s, v) => s + num(v), 0);
+    const incomeTotal = Object.values(fx.income || {}).reduce((s, v) => s + num(v), 0);
+    const netProfit = margin - fixedTotal;                 // 총매출 − 총매입 − 고정비 (= 찐마진 − 고정비)
+    const realProfit = netProfit + incomeTotal;            // + 정부지원금
+
+    const chips = h('div', 'profit-chips');
+    const chip = (label, value, cls) => {
+      const c = h('div', 'pchip');
+      c.appendChild(h('div', 'pchip-label', label));
+      c.appendChild(h('div', 'pchip-value' + (cls ? ' ' + cls : ''), value));
+      return c;
+    };
+    chips.appendChild(chip('💵 총 매출', fmtFull(sales)));
+    chips.appendChild(chip('📦 매입 (공급가액)', '− ' + fmtFull(supply), 'minus'));
+    chips.appendChild(chip('⭐ 찐마진', fmtFull(margin), margin < 0 ? 'neg' : ''));
+    chips.appendChild(chip('🧾 고정비', '− ' + fmtFull(fixedTotal), 'minus'));
+    if (incomeTotal > 0) chips.appendChild(chip('🎁 정부지원금', '+ ' + fmtFull(incomeTotal), 'plus'));
+    fCard.appendChild(chips);
+
+    // 고정비 카테고리 (0원 제외)
+    const fixedEntries = Object.entries(fx.fixed).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
+    if (fixedEntries.length > 0) {
+      fCard.appendChild(h('div', 'cat-title', '📋 고정비 (' + currentSeason + '년 시즌)'));
+      const cg = h('div', 'cat-grid');
+      fixedEntries.forEach(([name, v]) => {
+        const c = h('span', 'cat-chip');
+        c.appendChild(h('span', null, name));
+        c.appendChild(h('span', 'amt', fmtFull(num(v))));
+        cg.appendChild(c);
+      });
+      fCard.appendChild(cg);
     }
+    // 지원금 카테고리 (0원 제외)
+    const incEntries = Object.entries(fx.income || {}).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
+    if (incEntries.length > 0) {
+      fCard.appendChild(h('div', 'cat-title', '🎁 정부지원금 (' + currentSeason + '년 시즌)'));
+      const ig = h('div', 'cat-grid');
+      incEntries.forEach(([name, v]) => {
+        const c = h('span', 'cat-chip');
+        c.appendChild(h('span', null, name));
+        c.appendChild(h('span', 'amt', '+' + fmtFull(num(v))));
+        ig.appendChild(c);
+      });
+      fCard.appendChild(ig);
+    }
+
+    const resultCard = (title, formula, value, rate, extra) => {
+      const card = h('div', 'profit-card ' + (value < 0 ? 'neg' : 'pos'));
+      card.appendChild(h('div', 'pc-title', title));
+      card.appendChild(h('div', 'pc-formula', formula));
+      card.appendChild(h('div', 'pc-value', fmtFull(value)));
+      card.appendChild(h('div', 'pc-sub', '순이익률 ' + (sales > 0 ? fmtPct(rate) : '-') + (extra ? '  ' + extra : '')));
+      return card;
+    };
+    fCard.appendChild(resultCard(
+      '📌 ' + currentSeason + '년 시즌 · 회사 순이익', '총매출 − 총매입 − 고정비',
+      netProfit, sales > 0 ? netProfit / sales : 0));
+    fCard.appendChild(resultCard(
+      '🌍 ' + currentSeason + '년 시즌 · 현실 회사 이익', '총매출 + 정부지원금 − 총매입 − 고정비',
+      realProfit, sales > 0 ? realProfit / sales : 0,
+      incomeTotal > 0 ? '(지원금 +' + fmtFull(incomeTotal) + ')' : ''));
   }
-  contentEl.appendChild(lCard);
+  contentEl.appendChild(fCard);
 }
 
 function kpiCard(label, dotColor, value, sub, isNeg) {
