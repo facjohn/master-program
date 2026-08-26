@@ -500,10 +500,12 @@ function isIncomplete(t) {
 }
 
 // 입금 전 거래 판단 — 데스크톱 isPendingDeposit과 동일.
-// 비용은 입력됐는데 실입금이 0이면 찐마진이 -공급가액 허수가 되므로 집계에서 분리 (현재 시즌만).
+// 비용은 입력됐는데 실입금이 확인 전이면 찐마진이 -공급가액 허수가 되므로 금액 집계에서 분리 (현재 시즌만).
 // 정산 완료 시즌(~SETTLED_SEASON_MAX)은 저장값 그대로 신뢰.
+// 상태가 종결/클레임이면 확정 거래 — 실입금 0원(전액 클레임 등)이어도 손실은 진짜 손실이라 분리하지 않음.
 function isPendingDeposit(t) {
   if (t.season === null || t.season <= SETTLED_SEASON_MAX) return false;
+  if (t.status === '종결' || t.status === '클레임') return false;
   return (t.actualReceivedKrw || 0) === 0 && (t.supplyAmount || 0) > 0;
 }
 
@@ -687,7 +689,8 @@ function renderDashboard() {
   grid.appendChild(kpiCard('매출', C_SALES, fmtShort(sales), fmtFull(sales), false));
   grid.appendChild(kpiCard('찐마진', margin < 0 ? C_LOSS_BAR : C_MARGIN, fmtShort(margin), fmtFull(margin), margin < 0));
   grid.appendChild(kpiCard('마진율', C_MARGIN, fmtPct(rate), '찐마진 ÷ 매출', rate < 0));
-  const cntCard = kpiCard('거래 건수', C_COUNT, seasonTxs.length + '건', lossTxs.length > 0 ? '적자 ' + lossTxs.length + '건' : '적자 없음', false);
+  // 건수는 선적 실적 기준(입금 전 포함) — 데스크톱 kpi.count와 동일 규칙
+  const cntCard = kpiCard('거래 건수', C_COUNT, (seasonTxs.length + pendingTxs.length) + '건', lossTxs.length > 0 ? '적자 ' + lossTxs.length + '건' : '적자 없음', false);
   if (lossTxs.length > 0) cntCard.querySelector('.kpi-sub').classList.add('neg');
   grid.appendChild(cntCard);
   kpiSec.appendChild(grid);
