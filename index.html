@@ -499,6 +499,14 @@ function isIncomplete(t) {
   return false;
 }
 
+// 입금 전 거래 판단 — 데스크톱 isPendingDeposit과 동일.
+// 비용은 입력됐는데 실입금이 0이면 찐마진이 -공급가액 허수가 되므로 집계에서 분리 (현재 시즌만).
+// 정산 완료 시즌(~SETTLED_SEASON_MAX)은 저장값 그대로 신뢰.
+function isPendingDeposit(t) {
+  if (t.season === null || t.season <= SETTLED_SEASON_MAX) return false;
+  return (t.actualReceivedKrw || 0) === 0 && (t.supplyAmount || 0) > 0;
+}
+
 // ════════════════════════════════════════════════════
 // 로그인 / 잠그기
 // ════════════════════════════════════════════════════
@@ -648,8 +656,10 @@ function renderDashboard() {
   }
 
   const seasonAll = txs.filter(t => t.season === currentSeason);
-  const seasonTxs = seasonAll.filter(t => !isIncomplete(t));       // KPI·차트 대상
-  const excludedCount = seasonAll.length - seasonTxs.length;        // 미확정 제외 건수
+  const seasonComplete = seasonAll.filter(t => !isIncomplete(t));
+  const pendingTxs = seasonComplete.filter(t => isPendingDeposit(t)); // 입금 전 — 집계 분리
+  const seasonTxs = seasonComplete.filter(t => !isPendingDeposit(t)); // KPI·차트 대상
+  const excludedCount = seasonAll.length - seasonComplete.length;     // 미확정 제외 건수
 
   if (seasonAll.length === 0) {
     const box = h('div', 'state');
@@ -670,6 +680,7 @@ function renderDashboard() {
   const kpiHead = h('div', 'sec-head');
   kpiHead.appendChild(h('h2', 'sec-title', '📊 ' + currentSeason + '년 시즌 (' + currentSeason + '.07 ~ ' + (currentSeason + 1) + '.06)'));
   if (excludedCount > 0) kpiHead.appendChild(h('span', 'badge', '미확정 ' + excludedCount + '건 제외'));
+  if (pendingTxs.length > 0) kpiHead.appendChild(h('span', 'badge', '입금 전 ' + pendingTxs.length + '건 분리'));
   kpiSec.appendChild(kpiHead);
 
   const grid = h('div', 'kpi-grid');
