@@ -363,6 +363,7 @@ function productEmoji(name) {
 
 let txs = [];            // 정규화된 거래
 let fixedCosts = {};     // 시즌별 고정비/지원금 (백엔드 fixedCosts)
+let fcVersion = 0;       // 백엔드 버전 마커 (v2 = 신규 A~Z 매핑 + wBlank 제공)
 let currentSeason = null;
 
 // ════════════════════════════════════════════════════
@@ -488,6 +489,8 @@ function normalizeTx(r) {
     costMaterial, costPacking, costInland, costFreight, costOther,
     supplyAmount, actualReceivedKrw, trueMargin,
     status: String(r.status || ''),
+    // 신 백엔드(v2)만 제공 — W셀이 빈칸인지(true) 리터럴 0 저장인지(false). 구 백엔드는 undefined.
+    wBlank: r.wBlank === undefined ? undefined : !!r.wBlank,
   };
 }
 
@@ -506,6 +509,7 @@ function isIncomplete(t) {
 function isPendingDeposit(t) {
   if (t.season === null || t.season <= SETTLED_SEASON_MAX) return false;
   if (t.status === '종결' || t.status === '클레임') return false;
+  if (t.wBlank === false) return false; // 시트 W셀에 리터럴 0 저장 = '0원 확정' (신 백엔드가 내려줌)
   return (t.actualReceivedKrw || 0) === 0 && (t.supplyAmount || 0) > 0;
 }
 
@@ -579,6 +583,7 @@ async function loadData() {
     if (data.error) throw new Error(data.error);
     txs = (data.txs || []).map(normalizeTx);
     fixedCosts = data.fixedCosts || {};
+    fcVersion = Number(data.fcVersion) || 0;
 
     const now = new Date();
     document.getElementById('header-status').textContent =
@@ -675,7 +680,8 @@ function renderDashboard() {
   const sales = seasonTxs.reduce((s, t) => s + t.actualReceivedKrw, 0);
   const margin = seasonTxs.reduce((s, t) => s + t.trueMargin, 0);
   const rate = sales > 0 ? margin / sales : 0;   // 마진율 = 찐마진 / 매출
-  const lossTxs = seasonTxs.filter(t => t.trueMargin < 0 && t.actualReceivedKrw > 0);
+  // 적자 정의는 데스크톱(trueMargin < 0)과 동일 — 입금 전 거래는 이미 분리돼 있음
+  const lossTxs = seasonTxs.filter(t => t.trueMargin < 0);
 
   // ── ① KPI 2×2 ──
   const kpiSec = h('div');
@@ -795,17 +801,28 @@ function renderDashboard() {
   const fCard = sectionCard('🏢 회사 순이익');
   fCard.appendChild(h('div', 'sec-sub', '찐마진에서 고정비(인건비/임대료 등)를 차감한 실제 회사 이익'));
 
+  // 백엔드 신/구 판별 — 버전 마커(fcVersion>=2) 우선, 없으면 "어느 시즌이든" 공과금 키 존재로 판별.
+  // (과거엔 '현재 시즌 행'의 키 유무로 판별해, 그 시즌 고정비가 미입력이면
+  //  최신 백엔드인데도 "재배포 필요"로 오진하고 순이익 수치가 숨는 문제가 있었음)
+  const backendReady = fcVersion >= 2 || Object.values(fixedCosts || {}).some(
+    row => row && row.fixed && Object.prototype.hasOwnProperty.call(row.fixed, '공과금')
+  );
   const fx = fixedCosts[String(currentSeason)];
-  // 새 백엔드(A~Z 매핑) 여부 판별 — 옛 백엔드는 '공과금' 키가 없어 새 카테고리(Q~Z) 값이 빠짐
-  const fxReady = fx && fx.fixed && Object.prototype.hasOwnProperty.call(fx.fixed, '공과금');
-  if (!fxReady) {
+  if (!backendReady) {
     const note = h('div', 'profit-note');
     note.appendChild(h('div', null, '고정비 데이터를 불러오려면 백엔드(Apps Script) 업데이트가 1회 필요합니다.'));
     note.appendChild(h('div', null, 'PC의 margin-program/mobile 폴더 안내에 따라 재배포하면 이 자리에 회사 순이익이 표시됩니다.'));
+    note.appendChild(h('div', null, '(고정비를 아직 한 시즌도 입력하지 않은 경우에도 이 안내가 보일 수 있어요 — 그 경우 PC 앱에서 고정비를 먼저 입력해주세요)'));
     fCard.appendChild(note);
   } else {
-    const fixedTotal = Object.values(fx.fixed).reduce((s, v) => s + num(v), 0);
-    const incomeTotal = Object.values(fx.income || {}).reduce((s, v) => s + num(v), 0);
+    // 시즌 행이 없으면(고정비 미입력) 데스크톱과 동일하게 0원으로 계산하고 안내만 표시
+    const fxFixed = (fx && fx.fixed) || {};
+    const fxIncome = (fx && fx.income) || {};
+    if (!fx) {
+      fCard.appendChild(h('div', 'sec-sub', '💡 ' + currentSeason + '년 시즌 고정비가 아직 입력되지 않았습니다 (0원으로 계산). PC 앱 대시보드에서 입력할 수 있어요.'));
+    }
+    const fixedTotal = Object.values(fxFixed).reduce((s, v) => s + num(v), 0);
+    const incomeTotal = Object.values(fxIncome).reduce((s, v) => s + num(v), 0);
     const netProfit = margin - fixedTotal;                 // 총매출 − 총매입 − 고정비 (= 찐마진 − 고정비)
     const realProfit = netProfit + incomeTotal;            // + 정부지원금
 
@@ -824,7 +841,7 @@ function renderDashboard() {
     fCard.appendChild(chips);
 
     // 고정비 카테고리 (0원 제외)
-    const fixedEntries = Object.entries(fx.fixed).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
+    const fixedEntries = Object.entries(fxFixed).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
     if (fixedEntries.length > 0) {
       fCard.appendChild(h('div', 'cat-title', '📋 고정비 (' + currentSeason + '년 시즌)'));
       const cg = h('div', 'cat-grid');
@@ -837,7 +854,7 @@ function renderDashboard() {
       fCard.appendChild(cg);
     }
     // 지원금 카테고리 (0원 제외)
-    const incEntries = Object.entries(fx.income || {}).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
+    const incEntries = Object.entries(fxIncome).filter(([, v]) => num(v) > 0).sort((a, b) => num(b[1]) - num(a[1]));
     if (incEntries.length > 0) {
       fCard.appendChild(h('div', 'cat-title', '🎁 정부지원금 (' + currentSeason + '년 시즌)'));
       const ig = h('div', 'cat-grid');
